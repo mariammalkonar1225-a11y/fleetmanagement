@@ -1,0 +1,501 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicles | Fleetwise</title>
+
+    <style>
+        :root {
+            --navy: #142b27;
+            --green: #276749;
+            --mint: #e6f2e9;
+            --bg: #f6f8f5;
+            --white: #fff;
+            --text: #1c2925;
+            --muted: #77837d;
+            --border: #e6ebe6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        .layout { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 245px;
+            flex-shrink: 0;
+            background: var(--navy);
+            color: white;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 8px;
+            margin-bottom: 48px;
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 13px;
+            background: #d9f0df;
+            color: #204f39;
+            display: grid;
+            place-items: center;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .brand-name { font-size: 22px; font-weight: 750; }
+        .brand-sub {
+            font-size: 10px;
+            color: #b5c9bd;
+            margin-top: 4px;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+        }
+
+        .nav-label {
+            color: #91a89a;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.8px;
+            padding: 0 12px;
+            margin-bottom: 15px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 14px 13px;
+            margin-bottom: 7px;
+            border-radius: 10px;
+            color: #d2ded6;
+            font-size: 14px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: #29453b;
+            color: white;
+        }
+
+        .nav-link.active { box-shadow: inset 3px 0 #9bdfad; }
+        .nav-icon { width: 22px; text-align: center; font-size: 18px; }
+
+        .sidebar-bottom { margin-top: auto; padding: 20px 8px 0; }
+        .support-box {
+            border: 1px solid #39564a;
+            background: #1c3830;
+            border-radius: 13px;
+            padding: 17px;
+        }
+        .support-box strong { font-size: 13px; }
+        .support-box p {
+            color: #b8c9be;
+            font-size: 12px;
+            line-height: 1.7;
+            margin-top: 8px;
+        }
+
+        .main { flex: 1; min-width: 0; }
+
+        .topbar {
+            min-height: 82px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 18px 4%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .breadcrumb { color: var(--muted); font-size: 13px; }
+        .breadcrumb strong { color: var(--text); }
+
+        .profile { display: flex; align-items: center; gap: 11px; }
+        .avatar {
+            width: 39px;
+            height: 39px;
+            border-radius: 50%;
+            background: var(--mint);
+            color: var(--green);
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+        }
+        .profile strong { display: block; font-size: 13px; }
+        .profile small { display: block; color: var(--muted); margin-top: 4px; }
+
+        .content { max-width: 1450px; padding: 36px 4%; margin: auto; }
+
+        .eyebrow {
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        h1 { font-size: clamp(27px, 3vw, 35px); letter-spacing: -1px; }
+        .subtitle { color: var(--muted); font-size: 13px; line-height: 1.8; margin-top: 10px; }
+
+        .page-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .count-pill {
+            background: var(--mint);
+            color: var(--green);
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 12px;
+            font-weight: 750;
+            white-space: nowrap;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 24px;
+        }
+
+        .card-heading {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-bottom: 23px;
+        }
+
+        .section-icon {
+            width: 43px;
+            height: 43px;
+            background: var(--mint);
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            font-size: 21px;
+        }
+
+        h2 { font-size: 18px; }
+        .card-heading p { color: var(--muted); font-size: 12px; margin-top: 5px; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 19px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 9px;
+        }
+
+        input, select {
+            width: 100%;
+            min-width: 0;
+            padding: 13px;
+            border: 1px solid #dce4dd;
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: #76a887;
+            box-shadow: 0 0 0 3px #27674912;
+        }
+
+        .primary-btn {
+            border: 0;
+            border-radius: 8px;
+            background: var(--green);
+            color: white;
+            padding: 13px 19px;
+            margin-top: 22px;
+            font-size: 13px;
+            font-weight: 750;
+            cursor: pointer;
+        }
+
+        .primary-btn:hover { background: #1e543a; }
+
+        .message {
+            background: #e8f6ec;
+            color: #21643b;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        .table-wrap { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 620px; }
+
+        th {
+            background: #f6f8f5;
+            color: #637168;
+            font-size: 10px;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            font-weight: 750;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 16px 13px;
+            border-bottom: 1px solid #edf0ed;
+        }
+
+        td { font-size: 13px; }
+        tbody tr:last-child td { border-bottom: 0; }
+        tbody tr:hover { background: #fbfcfa; }
+
+        .status-pill {
+            display: inline-block;
+            background: #e8f6ec;
+            color: #28754b;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .delete-btn {
+            background: #fff0ee;
+            color: #b83b31;
+            border: 0;
+            border-radius: 7px;
+            padding: 8px 11px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px 15px;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 22px 0 8px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        @media (max-width: 850px) {
+            .sidebar { width: 205px; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 650px) {
+            .layout { display: block; }
+            .sidebar { width: 100%; padding: 17px 18px; }
+            .brand { margin-bottom: 18px; }
+            .nav-label, .sidebar-bottom { display: none; }
+            .sidebar nav { display: flex; gap: 7px; overflow-x: auto; }
+            .nav-link { margin: 0; padding: 10px; white-space: nowrap; font-size: 12px; }
+            .topbar { min-height: 65px; padding: 14px 18px; }
+            .content { padding: 27px 18px; }
+            .page-heading { align-items: flex-start; flex-direction: column; }
+            .card { padding: 19px; }
+            footer { flex-direction: column; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="layout">
+
+    <aside class="sidebar">
+        <a href="/" class="brand">
+            <div class="brand-icon">F</div>
+            <div>
+                <div class="brand-name">Fleetwise</div>
+                <div class="brand-sub">Fleet operations</div>
+            </div>
+        </a>
+
+        <div class="nav-label">WORKSPACE</div>
+        <nav>
+            <a href="/" class="nav-link"><span class="nav-icon">⌂</span> Overview</a>
+            <a href="/vehicles" class="nav-link active"><span class="nav-icon">▰</span> Vehicles</a>
+            <a href="/drivers" class="nav-link"><span class="nav-icon">♙</span> Drivers</a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="support-box">
+                <strong>Fleet at a glance</strong>
+                <p>Keep vehicle records accurate and your operations organized.</p>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div class="breadcrumb">
+                <a href="/">Workspace</a> &nbsp; / &nbsp; <strong>Vehicles</strong>
+            </div>
+            <div class="profile">
+                <div class="avatar">F</div>
+                <div>
+                    <strong>Fleet Manager</strong>
+                    <small style="color:#77837d;font-size:11px">Operations dashboard</small>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <section class="page-heading">
+                <div>
+                    <div class="eyebrow">FLEET OPERATIONS</div>
+                    <h1>Vehicle Management</h1>
+                    <p class="subtitle">Register vehicles, update your fleet records, and manage vehicle status.</p>
+                </div>
+                <div class="count-pill">
+                    Total vehicles: <span th:text="${#lists.size(vehicles)}">0</span>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-heading">
+                    <div class="section-icon">＋</div>
+                    <div>
+                        <h2>Add a vehicle</h2>
+                        <p>Enter the details to register a vehicle in your fleet.</p>
+                    </div>
+                </div>
+
+                <form th:action="@{/vehicles/add}" th:object="${vehicle}" method="post">
+                    <div class="form-grid">
+                        <div>
+                            <label for="registrationNumber">Registration number</label>
+                            <input id="registrationNumber" type="text"
+                                   th:field="*{registrationNumber}"
+                                   placeholder="e.g. MH02AB1234" required>
+                        </div>
+
+                        <div>
+                            <label for="vehicleType">Vehicle type</label>
+                            <select id="vehicleType" th:field="*{vehicleType}" required>
+                                <option value="">Select vehicle type</option>
+                                <option value="Truck">Truck</option>
+                                <option value="Van">Van</option>
+                                <option value="Car">Car</option>
+                                <option value="Bus">Bus</option>
+                                <option value="Pickup">Pickup</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="capacity">Capacity</label>
+                            <input id="capacity" type="number" min="1"
+                                   th:field="*{capacity}"
+                                   placeholder="Enter capacity" required>
+                        </div>
+
+                        <div>
+                            <label for="status">Vehicle status</label>
+                            <select id="status" th:field="*{status}" required>
+                                <option value="Available">Available</option>
+                                <option value="In Use">In Use</option>
+                                <option value="Maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="primary-btn" type="submit">＋ &nbsp; Register vehicle</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <div class="card-heading">
+                    <div class="section-icon">▤</div>
+                    <div>
+                        <h2>Registered vehicles</h2>
+                        <p>View and manage the vehicles in your fleet.</p>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Registration</th>
+                            <th>Vehicle type</th>
+                            <th>Capacity</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="v : ${vehicles}">
+                            <td th:text="${v.id}"></td>
+                            <td><strong th:text="${v.registrationNumber}"></strong></td>
+                            <td th:text="${v.vehicleType}"></td>
+                            <td th:text="${v.capacity}"></td>
+                            <td><span class="status-pill" th:text="${v.status}"></span></td>
+                            <td>
+                                <form th:action="@{/vehicles/delete/{id}(id=${v.id})}"
+                                      method="post"
+                                      onsubmit="return confirm('Delete this vehicle?')">
+                                    <button class="delete-btn" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(vehicles)}">
+                            <td colspan="6" class="empty">
+                                No vehicles registered yet.<br>
+                                Add your first vehicle using the form above.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <footer>
+                <span>Fleetwise · Fleet Management</span>
+                <span>Simple. Organized. Efficient.</span>
+            </footer>
+        </div>
+    </main>
+</div>
+</body>
+</html>
